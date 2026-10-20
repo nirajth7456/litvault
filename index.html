@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LitVault — community digital library</title>
+  <meta name="description" content="Upload, discover, preview and download PDF books — with an AI librarian.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <script>
+    // Apply the saved theme before first paint (no flash).
+    (function () {
+      try {
+        var t = localStorage.getItem('theme');
+        if (t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches))
+          document.documentElement.classList.add('dark');
+      } catch (e) {}
+    })();
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] } } } };
+  </script>
+  <style type="text/tailwindcss">
+    @layer base { body { @apply bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100 antialiased; } }
+    @layer components {
+      .input { @apply w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition placeholder:text-slate-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-800 dark:bg-slate-900 dark:placeholder:text-slate-500; }
+      .btn { @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-50; }
+      .btn-primary { @apply btn bg-indigo-600 text-white shadow-sm hover:bg-indigo-500; }
+      .btn-ghost { @apply btn border border-slate-200 bg-white hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:hover:bg-slate-800; }
+      .card { @apply rounded-xl border border-slate-200 bg-white shadow-[0_1px_2px_rgba(15,23,42,.04),0_8px_24px_-8px_rgba(15,23,42,.12)] dark:border-slate-800 dark:bg-slate-900; }
+      .tag { @apply rounded-full bg-indigo-50 px-2 py-0.5 text-[11px] font-medium text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300; }
+    }
+  </style>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="min-h-screen font-sans">
+  <header id="nav" class="sticky top-0 z-40 border-b border-slate-200 bg-white/80 backdrop-blur-md dark:border-slate-800 dark:bg-slate-950/80"></header>
+
+  <main id="app" class="mx-auto max-w-7xl px-4 py-8 sm:px-6"></main>
+
+  <footer class="border-t border-slate-200 py-8 text-center text-xs text-slate-500 dark:border-slate-800">
+    © LitVault · Share knowledge freely.
+  </footer>
+
+  <!-- Floating AI chat (filled by app.js) -->
+  <div id="chat-pop" class="card fixed inset-x-3 bottom-20 z-50 hidden h-[70vh] max-h-[560px] flex-col overflow-hidden sm:inset-x-auto sm:right-5 sm:w-[380px]"></div>
+  <button id="chat-fab" aria-label="Open AI Librarian" class="fixed bottom-5 right-5 z-50 grid h-14 w-14 place-items-center rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 text-white shadow-lg shadow-indigo-500/30 transition hover:scale-105 active:scale-95"></button>
+
+  <!-- PDF viewer modal (pdf.js renders pages to canvas, so it works on phones too) -->
+  <div id="pdf-modal" class="fixed inset-0 z-[60] hidden items-center justify-center bg-slate-950/70 backdrop-blur-sm sm:p-6" role="dialog" aria-modal="true" aria-label="PDF preview">
+    <div class="flex h-full w-full max-w-5xl flex-col overflow-hidden bg-white shadow-2xl sm:h-[90vh] sm:rounded-2xl dark:bg-slate-900">
+      <div class="flex flex-wrap items-center gap-2 border-b border-slate-200 px-4 py-3 dark:border-slate-800">
+        <div class="min-w-0 flex-1">
+          <h2 id="pdf-title" class="truncate text-sm font-semibold"></h2>
+          <p id="pdf-sub" class="truncate text-xs text-slate-500"></p>
+        </div>
+        <div class="flex items-center gap-1">
+          <button id="pdf-zoom-out" class="btn-ghost !px-2.5 !py-1.5 text-xs" aria-label="Zoom out">−</button>
+          <button id="pdf-zoom-in" class="btn-ghost !px-2.5 !py-1.5 text-xs" aria-label="Zoom in">+</button>
+        </div>
+        <button id="pdf-download" class="btn-primary !py-1.5 text-xs"></button>
+        <button id="pdf-close" aria-label="Close" class="grid h-8 w-8 place-items-center rounded-md hover:bg-slate-100 dark:hover:bg-slate-800"></button>
+      </div>
+      <div id="pdf-pages" class="relative flex-1 overflow-auto bg-slate-100 p-3 dark:bg-slate-950"></div>
+      <div id="pdf-status" class="hidden border-t border-slate-200 px-4 py-1.5 text-center text-xs text-slate-500 dark:border-slate-800"></div>
+    </div>
+  </div>
+
+  <div id="toasts" class="fixed right-4 top-20 z-[70] flex flex-col gap-2"></div>
+
+  <noscript><p style="padding:2rem;text-align:center">LitVault needs JavaScript enabled.</p></noscript>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
